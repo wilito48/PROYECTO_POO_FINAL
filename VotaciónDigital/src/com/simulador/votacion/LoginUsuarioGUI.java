@@ -3,6 +3,7 @@ package com.simulador.votacion;
 import javax.swing.*;
 import java.awt.*;
 
+
 public class LoginUsuarioGUI extends JFrame {
 
     private JTextField usuarioField = new JTextField(20);
@@ -56,14 +57,20 @@ public class LoginUsuarioGUI extends JFrame {
                 return;
             }
 
-            if (UsuarioDAO.validarLogin(usuario, contrasena)) {
-                JOptionPane.showMessageDialog(this, "Login exitoso. Bienvenido " + usuario + "!", "Bienvenido", JOptionPane.INFORMATION_MESSAGE);
-                this.dispose();
-                SimuladorVotacionGUI.main(null);
+            String nombreUsuario = UsuarioDAO.validarLogin(usuario, contrasena);  // Devuelve el nombre
+
+            if (nombreUsuario != null) {
+                JOptionPane.showMessageDialog(this, "Login exitoso. Bienvenido " + nombreUsuario + "!", "Bienvenido", JOptionPane.INFORMATION_MESSAGE);
+                this.dispose();  // Cerramos la ventana de login
+
+                // Abrimos el sistema con el nombre
+                new SimuladorVotacionGUI(nombreUsuario).setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
+
+
 
         background.add(loginPanel);
         setContentPane(background);

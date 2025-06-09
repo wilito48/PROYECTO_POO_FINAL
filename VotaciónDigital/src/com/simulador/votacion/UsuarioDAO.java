@@ -4,6 +4,7 @@
 	
 	public class UsuarioDAO {
 	
+		
 		public static boolean registrarUsuario(String usuario, String contrasena, String nombre) {
 		    try {
 		        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -29,19 +30,25 @@
 		}
 	
 	
-	    public static boolean validarLogin(String usuario, String contrasena) {
-	        String sql = "SELECT * FROM Usuarios WHERE usuario = ? AND contrasena = ?";
-	        try (Connection con = ConexionDB.getConnection();
-	             PreparedStatement ps = con.prepareStatement(sql)) {
-	            ps.setString(1, usuario);
-	            ps.setString(2, contrasena);
-	            try (ResultSet rs = ps.executeQuery()) {
-	                return rs.next(); // Si hay fila, usuario y contraseña correctos
-	            }
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	            return false;
-	        }
-	    }
+		public static String validarLogin(String usuario, String contrasena) {
+		    String sql = "SELECT nombre FROM Usuarios WHERE usuario = ? AND contrasena = ?";
+		    try (Connection con = ConexionDB.getConnection();
+		         PreparedStatement ps = con.prepareStatement(sql)) {
+		        ps.setString(1, usuario);
+		        ps.setString(2, contrasena);
+		        try (ResultSet rs = ps.executeQuery()) {
+		            if (rs.next()) {
+		                return rs.getString("nombre"); // Devuelve el nombre completo
+		            }
+		        }
+		    } catch (SQLException e) {
+		        e.printStackTrace();
+		    }
+		    return null; // Si no encuentra el usuario o hay error
+		}
+		
+		
 	}
+	
+	
 

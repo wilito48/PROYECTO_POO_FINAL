@@ -7,29 +7,41 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimuladorVotacionGUI {
+public class SimuladorVotacionGUI extends JFrame {  // <-- Ahora hereda de JFrame
 
     private static List<Candidato> candidatos = new ArrayList<>();
     private static JTextArea resultadosTextArea = new JTextArea();
     private static int totalVotos = 0;
 
-    public static void main(String[] args) {
-        // Candidatos de ejemplo
-        candidatos.add(new CandidatoPartido1("Ana"));
-        candidatos.add(new CandidatoPartido2("Luis"));
-        candidatos.add(new CandidatoPartido1("Pedro"));
+    private String nombreUsuario; // <--- nombre del usuario logueado
 
-        JFrame frame = new JFrame("🗳️ Simulador de Votación Electrónica");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
-        frame.setLocationRelativeTo(null);
+    // Constructor que recibe el nombre del usuario
+    public SimuladorVotacionGUI(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
 
-        // Panel principal con degradado de fondo
+        setTitle("Simulador de Votación Electrónica");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setLocationRelativeTo(null);
+
+        inicializarComponentes();
+
+        mostrarResultados();
+    }
+
+    // Método para inicializar la GUI (antes estaba en main)
+    private void inicializarComponentes() {
+        // Si los candidatos aún no están, agregamos ejemplo (solo la primera vez)
+        if (candidatos.isEmpty()) {
+            candidatos.add(new CandidatoPartido1("Ana"));
+            candidatos.add(new CandidatoPartido2("Luis"));
+            candidatos.add(new CandidatoPartido1("Pedro"));
+        }
+
         JPanel mainPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                // Degradado vertical azul claro a blanco
                 Graphics2D g2d = (Graphics2D) g;
                 GradientPaint gp = new GradientPaint(0, 0, new Color(63, 81, 181), 0, getHeight(), Color.WHITE);
                 g2d.setPaint(gp);
@@ -39,25 +51,37 @@ public class SimuladorVotacionGUI {
         mainPanel.setLayout(new BorderLayout(30, 30));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
-        // Título
+        // Panel con título y nombre de usuario arriba
+        JPanel tituloPanel = new JPanel(new BorderLayout());
+        tituloPanel.setOpaque(false);
+
         JLabel titulo = new JLabel("Simulador de Votación Electrónica", JLabel.CENTER);
         titulo.setFont(new Font("Segoe UI Semibold", Font.BOLD, 48));
         titulo.setForeground(Color.WHITE);
         titulo.setBorder(new EmptyBorder(0, 0, 20, 0));
-        mainPanel.add(titulo, BorderLayout.NORTH);
+
+        JLabel labelUsuario = new JLabel("Usuario: " + nombreUsuario, JLabel.RIGHT);
+        labelUsuario.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        labelUsuario.setForeground(Color.WHITE);
+        labelUsuario.setBorder(new EmptyBorder(0, 0, 20, 20));
+
+        tituloPanel.add(titulo, BorderLayout.CENTER);
+        tituloPanel.add(labelUsuario, BorderLayout.SOUTH);
+
+        mainPanel.add(tituloPanel, BorderLayout.NORTH);
 
         // Panel candidatos con fondo blanco y sombra (borde)
         JPanel candidatosPanel = new JPanel();
         candidatosPanel.setLayout(new BoxLayout(candidatosPanel, BoxLayout.Y_AXIS));
         candidatosPanel.setBackground(Color.WHITE);
         candidatosPanel.setBorder(BorderFactory.createCompoundBorder(
-                new DropShadowBorder(), 
+                new DropShadowBorder(),
                 BorderFactory.createEmptyBorder(30, 30, 30, 30)));
 
         JLabel candidatosTitulo = new JLabel("Seleccione un candidato");
         candidatosTitulo.setFont(new Font("Segoe UI", Font.BOLD, 36));
         candidatosTitulo.setForeground(new Color(33, 33, 33));
-        candidatosTitulo.setBorder(BorderFactory.createEmptyBorder(0, 200, 0, 0)); // Empuja 30px a la derecha
+        candidatosTitulo.setBorder(BorderFactory.createEmptyBorder(0, 200, 0, 0));
         candidatosPanel.add(candidatosTitulo);
         candidatosPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
@@ -82,7 +106,6 @@ public class SimuladorVotacionGUI {
         candidatosScroll.setBorder(null);
         candidatosScroll.getViewport().setBackground(Color.WHITE);
 
-        // Resultados con fondo blanco, fuente grande y borde sombra
         resultadosTextArea.setEditable(false);
         resultadosTextArea.setFont(new Font("Consolas", Font.PLAIN, 26));
         resultadosTextArea.setBackground(Color.WHITE);
@@ -101,7 +124,6 @@ public class SimuladorVotacionGUI {
         splitPane.setContinuousLayout(true);
         mainPanel.add(splitPane, BorderLayout.CENTER);
 
-        // Panel botones con diseño moderno
         JPanel botonesPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 20));
         botonesPanel.setBackground(new Color(63, 81, 181));
 
@@ -120,19 +142,19 @@ public class SimuladorVotacionGUI {
                     candidatos.get(i).registrarVoto();
                     totalVotos++;
                     votado = true;
-                    JOptionPane.showMessageDialog(frame, "✅ Voto registrado para: " + candidatos.get(i).nombre, "Votación Exitosa", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "✅ Voto registrado para: " + candidatos.get(i).nombre, "Votación Exitosa", JOptionPane.INFORMATION_MESSAGE);
                     break;
                 }
             }
             if (!votado) {
-                JOptionPane.showMessageDialog(frame, "⚠️ Por favor, seleccione un candidato antes de votar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "⚠️ Por favor, seleccione un candidato antes de votar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
             }
             mostrarResultados();
         });
 
         finalizarButton.addActionListener(e -> {
             if (totalVotos == 0) {
-                JOptionPane.showMessageDialog(frame, "No se han registrado votos aún.", "Atención", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "No se han registrado votos aún.", "Atención", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             mostrarResultadosFinales();
@@ -142,16 +164,12 @@ public class SimuladorVotacionGUI {
             for (JRadioButton rb : botones) {
                 rb.setEnabled(false);
             }
-            JOptionPane.showMessageDialog(frame, "La votación ha finalizado. ¡Gracias por participar!", "Votación Finalizada", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "La votación ha finalizado. ¡Gracias por participar!", "Votación Finalizada", JOptionPane.INFORMATION_MESSAGE);
         });
 
-        frame.add(mainPanel);
-        frame.setVisible(true);
-
-        mostrarResultados();
+        setContentPane(mainPanel);
     }
 
-    // Método para crear botones bonitos con hover
     private static JButton crearBoton(String texto, Color colorFondo) {
         JButton boton = new JButton(texto);
         boton.setFont(new Font("Segoe UI Semibold", Font.BOLD, 28));
@@ -243,11 +261,7 @@ public class SimuladorVotacionGUI {
 
     // Sombra simple para paneles
     static class DropShadowBorder extends AbstractBorder {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		private static final int SHADOW_SIZE = 8;
+        private static final int SHADOW_SIZE = 8;
         private static final Color SHADOW_COLOR = new Color(0, 0, 0, 50);
 
         @Override
@@ -256,11 +270,10 @@ public class SimuladorVotacionGUI {
 
             g2.setColor(SHADOW_COLOR);
             for (int i = 0; i < SHADOW_SIZE; i++) {
-                float opacity = 0.15f - (float) i / (SHADOW_SIZE * 10);
+                float opacity = 0.15f - (i * 0.015f);
                 g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
                 g2.drawRoundRect(x + i, y + i, width - i * 2 - 1, height - i * 2 - 1, 20, 20);
             }
-
             g2.dispose();
         }
 
@@ -275,4 +288,16 @@ public class SimuladorVotacionGUI {
             return insets;
         }
     }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            // Aquí pruebas local sin usuario, puedes cambiar a:
+            // new SimuladorVotacionGUI("Invitado").setVisible(true);
+
+            SimuladorVotacionGUI gui = new SimuladorVotacionGUI("Invitado");
+            gui.setVisible(true);
+        });
+    }
+
 }
+
