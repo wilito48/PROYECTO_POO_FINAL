@@ -32,19 +32,10 @@ public class VentanaPrincipal extends JFrame {
         setTitle("Sistema de Votación Electrónica v1.0");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        // Configurar pantalla completa
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice gd = ge.getDefaultScreenDevice();
-        
-        if (gd.isFullScreenSupported()) {
-            gd.setFullScreenWindow(this);
-        } else {
-            // Si no soporta pantalla completa, maximizar la ventana
-            setExtendedState(JFrame.MAXIMIZED_BOTH);
-        }
-        
-        setLocationRelativeTo(null);
-        setResizable(true);
+        // Forzar pantalla completa de forma manual y estable
+        setUndecorated(true);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        setBounds(0, 0, screenSize.width, screenSize.height);
         
         // Configurar icono de la aplicación
         try {
