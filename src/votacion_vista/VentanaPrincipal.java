@@ -141,7 +141,7 @@ public class VentanaPrincipal extends JFrame {
         panel.setBackground(new Color(236, 240, 241));
         panel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         
-        JLabel lblInfo = new JLabel("© 2024 Sistema de Votación Electrónica - Versión 1.0");
+        JLabel lblInfo = new JLabel("© 2025 Sistema de Votación Electrónica - Versión 1.0");
         lblInfo.setFont(new Font("Arial", Font.PLAIN, 10));
         lblInfo.setForeground(new Color(127, 140, 141));
         
@@ -243,7 +243,7 @@ public class VentanaPrincipal extends JFrame {
             "• Cálculo de porcentajes\n" +
             "• Detección de empates\n" +
             "• Interfaz intuitiva\n\n" +
-            "© 2024 Todos los derechos reservados",
+            "© 2025 Todos los derechos reservados",
             "Acerca de",
             JOptionPane.INFORMATION_MESSAGE);
     }
